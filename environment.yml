@@ -1,0 +1,4 @@
+name: wss22
+channels:
+  - defaults
+prefix: /opt/homebrew/Caskroom/miniconda/base/envs/wss22
