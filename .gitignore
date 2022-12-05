@@ -1,3 +1,5 @@
+*.utf-8
+
 # MACOS
 **.DS_Store
 **__MACOSX
