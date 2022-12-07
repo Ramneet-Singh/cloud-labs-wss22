@@ -36,6 +36,6 @@ class WcWorker(Worker):
     while filename is not None:
       counts = wc(filename)
       rds.add_words(counts)
-      print(f"[Worker {self.name}]: {filename}")
+      logging.debug(f"[Worker {self.name}]: {filename}")
       filename = rds.get_file(self.name)
     logging.info("Exiting")
