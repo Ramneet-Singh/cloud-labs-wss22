@@ -6,11 +6,9 @@ import signal
 import sys
 from abc import abstractmethod, ABC
 from threading import current_thread
-from typing import Any, Final
-
+from typing import Any
 
 class Worker(ABC):
-  GROUP: Final = "worker"
 
   def __init__(self, **kwargs: Any):
     self.name = "worker-?"
