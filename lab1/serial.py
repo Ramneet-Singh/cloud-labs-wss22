@@ -10,7 +10,6 @@ import os
 count = {}
 
 for f in os.listdir('data/'):
-	print(f)
 	data = clean(open(os.path.join(os.path.dirname(__file__), 'data', f),'r').read())
 	for w in data:
 		if w not in count:
