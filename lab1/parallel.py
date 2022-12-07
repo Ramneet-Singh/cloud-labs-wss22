@@ -1,10 +1,8 @@
 import multiprocessing
 import logging
 import datetime
-import os
 import sys
 import re
-from functools import partial
 import glob
 
 LOG_FILE = "logs/parallel.log"
@@ -15,25 +13,23 @@ NUM_FILES = 124
 Clean a text file and return the list of words.
 """
 def clean(inp):
-	inp = inp.lower()
-	inp = re.sub(r'[^a-z ]','',inp)
-	return inp.split()
+    inp = inp.lower()
+    matches = re.findall(r'(\b[^\s]+\b)', inp)
+    return matches
 
 """
-Output the word count dictionary and set of words for a single file.
+Output the word count dictionary for a single file.
 """
 def mapFun(filename):
     mycounts = dict()
     text = open(filename, 'r').read()
     text = clean(text)
-    words = set()
     for word in text:
         if word in mycounts:
             mycounts[word] = mycounts[word]+1
         else:
             mycounts[word] = 1
-        words.add(word)
-    return mycounts, words
+    return mycounts
 
 """
 Aggregate the counts for a single word across multiple files. Return (word, count).
@@ -52,11 +48,14 @@ def main():
     dataDir = sys.argv[1]
     files = glob.glob(glob.escape(dataDir) + "/*")
     mapOuts = pool.map(mapFun, files)
-    words = set()
+    counts = dict()
     for out in mapOuts:
-        words = words.union(out[1])
-    redOuts = pool.map(partial(reduceFun, mapOuts), words)
-    sortedWords = sorted(redOuts, key=lambda x: x[1], reverse=True)
+        for w in out:
+            if w in counts:
+                counts[w] = counts[w]+out[w]
+            else:
+                counts[w] = out[w]
+    sortedWords = sorted(counts.items(), key=lambda x : x[1], reverse=True)
     for w in sortedWords[:10]:
         print(w)
     logging.info("main finished")

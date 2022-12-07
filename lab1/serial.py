@@ -1,9 +1,9 @@
 import re
 
 def clean(inp):
-	inp = inp.lower()
-	inp = re.sub(r'[^a-z ]','',inp)
-	return inp.split()
+    inp = inp.lower()
+    matches = re.findall(r'(\b[^\s]+\b)', inp)
+    return matches
 
 import os 
 
