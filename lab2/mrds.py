@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import Optional, Final
+from typing import Optional, Final, Dict
 
 from redis.client import Redis
 
-from base import Worker
 from constants import IN, COUNT, FNAME, GROUP
 
 
@@ -19,9 +18,14 @@ class MyRedis:
     self.rds.xadd(IN, {FNAME: fname})
 
   def get_file(self, worker_name: str) -> Optional[str]:
-    if self.rds.xlen(IN) > 0:
-      return self.rds.xreadgroup(GROUP, worker_name, {IN : '>'}, 1)
+    record = self.rds.xreadgroup(GROUP, worker_name, streams={IN : '>'}, count=1)
+    if len(record)>0:
+      return record[0][1][0][1][FNAME]
 
   def top(self, n: int) -> list[tuple[bytes, float]]:
     return self.rds.zrevrangebyscore(COUNT, '+inf', '-inf', 0, n,
                                      withscores=True)
+
+  def add_words(self, counts: Dict[str,int]) -> None:
+    for w in counts:
+      self.rds.zincrby(COUNT, counts[w], w)
